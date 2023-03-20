@@ -16,7 +16,7 @@ function [time_domain,S,I,R] = death_SIR(alpha,beta,rho,delta,epsilon,S0,I0,R0,T
     function ygrad = odefun(~,y)
         ygrad = zeros(3,1);
         N = sum(y);
-        ygrad(1) = rho - alpha*y(1)*y(2)/N + delta*y(1);
+        ygrad(1) = rho - alpha*y(1)*y(2)/N - delta*y(1);
         ygrad(2) = alpha*y(1)*y(2)/N - (beta+delta+epsilon)*y(2);
         ygrad(3) = beta*y(2) - delta*y(3);
     end
