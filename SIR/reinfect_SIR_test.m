@@ -9,13 +9,29 @@ I0 = 2;
 R0 = 38;
 T = 10;
 
-[time_domain,S,I,R] = reinfect_SIR(alpha,beta,kappa,S0,I0,R0,T);
+[time_domain,S,I,R] = reinfect_SIR(alpha,beta,0,S0,I0,R0,T);
 
+figure;
 plot(time_domain,S,'Color','Green');
 hold on;
 plot(time_domain,I,'Color','Black');
 plot(time_domain,R,'Color','Red');
 ylabel("Population");
 xlabel("Time (t)");
+title("Traditional SIR model");
+
+hold off;
+
+[time_domain,S,I,R] = reinfect_SIR(alpha,beta,kappa,S0,I0,R0,T);
+
+figure;
+plot(time_domain,S,'Color','Green');
+hold on;
+plot(time_domain,I,'Color','Black');
+plot(time_domain,R,'Color','Red');
+ylabel("Population");
+xlabel("Time (t)");
+title("Adapted SIR model");
+
 
 end
