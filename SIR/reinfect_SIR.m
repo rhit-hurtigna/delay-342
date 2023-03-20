@@ -1,5 +1,5 @@
 function [time_domain,S,I,R] = reinfect_SIR(alpha,beta,kappa,S0,I0,R0,T)
-%TRADITIONAL_SIR Does the SIR model in 10.4 from the
+%reinfect_SIR Does the SIR model in 10.4 from the
 %book
 %INPUTS
 % alpha -- percentage of interactions between susceptible and infected that
