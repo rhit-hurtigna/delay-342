@@ -3,26 +3,30 @@ close;
 clear;
 clc;
 
-% Find delays
-Ny      = 2;
-delyf   = pi;
-Nyp     = 10;
-delypf  = 2*pi;
+% Find delays, which are linearly spaced constants. 
+delay   = 0.5;
+Ny      = 1;
+delyf   = delay;
+Nyp     = 1;
+delypf  = delay;
 dely    = linspace(0, delyf, Ny+1);
 delyp   = linspace(0, delypf, Nyp+1);
+
 dely    = dely(2:end);
 delyp   = delyp(2:end);
 
-hist    = history_circ(-dely);
+y_hist_need = linspace(-delyf, 0, 100);
+
+hist    = history_circ(y_hist_need);
 
 % Start and End Points
 t0  = 0;
-tf  = 5;
+tf  = 10;
 
 % Solve DDE using ddensd
 sol = ddensd(@ddefun_circ, dely, delyp, @history_circ, [t0  tf]);
 
-plotX   = [-dely, sol.x];
+plotX   = [y_hist_need, sol.x];
 plotY   = [hist, sol.y];
 
 % Plotting
