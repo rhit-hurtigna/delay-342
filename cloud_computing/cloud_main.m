@@ -15,44 +15,23 @@ function [time_domain,V] = cloud_main(g,rho,u,connected,kappa,V0,T,tstep)
 %time_domain -- M discrete time points in [0,T]
 %V -- matrix that's M-by-N representing packet counts over time
 
+% make numbers work out nice for later indexing
+tper = ceil(tstep^(-1));
+tstep = tper^(-1);
+T = ceil(T);
+
 N = size(rho,1);
 delays = reshape(u,1,N*N); % matrix to row vector. Reads across the rows
+u = u * tper;
 % first, then columns.
 delays = [delays, 2*delays]; % now 2*N*N row vector
 y0 = [V0;zeros(N,1)];
 
 % History
-SendHist = zeros(N,N,0);
-t_domain = zeros(0);
-memoize_hist_lookup = containers.Map(-1,zeros(N,N));
-
-    % TODO: make this log n instead of linear
-    function Sent=getBestSend(t) % gets the best estimate of the 
-        % send matrix at t
-        if t < 0 % nobody sent this early
-            Sent=zeros(N,N);
-            return;
-        end
-
-        if isKey(memoize_hist_lookup,t)
-            Sent = memoize_hist_lookup(t);
-            return;
-        end
-
-        bestI = -1;
-        bestError = realmax;
-        %for i=size(t_domain,2):-1:1
-        for i=1:size(t_domain,2)
-            if abs(t_domain(i)-t) < bestError
-                bestError = abs(t_domain(i)-t);
-                bestI = i;
-            end
-        end
-        Sent = SendHist(:,:,bestI);
-        memoize_hist_lookup(t) = Sent;
-    end
+SendHist = zeros(N,N,T*tper);
 
     function ygrad = ddefun(t,y,Z)
+        t = round(t*tper) + 1;
         % ignore the processings
         y = y(1:N);
         Z = Z(1:N,:);
@@ -89,8 +68,7 @@ memoize_hist_lookup = containers.Map(-1,zeros(N,N));
         Sending = Sending .* rho ./ (max(rho,S)); % scale to fit pools
 
         % update history
-        SendHist(:,:,end+1) = Sending;
-        t_domain(end+1) = t;
+        SendHist(:,:,t) = Sending;
 
         ygrad = zeros(2*N,1);
         % calculate ygrad
@@ -102,7 +80,11 @@ memoize_hist_lookup = containers.Map(-1,zeros(N,N));
                     continue;
                 end
                 % i,j are connected.
-                Sent = getBestSend(t-u(i,j)); % use history
+                if t-u(i,j) > 0
+                    Sent = SendHist(:,:,t-u(i,j)); % use history
+                else
+                    Sent = zeros(N,N);
+                end
                 received = received + Sent(j,i);
             end
             ygrad(i) = received;
