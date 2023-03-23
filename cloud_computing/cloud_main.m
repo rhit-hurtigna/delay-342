@@ -1,4 +1,4 @@
-function [time_domain,V] = cloud_main(g,rho,u,connected,kappa,V0,T)
+function [time_domain,V] = cloud_main(g,rho,u,connected,kappa,V0,T,tstep)
 %CLOUD_MAIN Runs a cloud computing model
 %INPUTS
 %g -- packet-sending function
@@ -10,6 +10,7 @@ function [time_domain,V] = cloud_main(g,rho,u,connected,kappa,V0,T)
 %kappa -- scalar cost of processing packets
 %V0 -- column vector of initial packet counts, N-by-1
 %T -- how far to simulate in the future
+%tstep -- Forward Euler step size
 %OUTPUTS
 %time_domain -- M discrete time points in [0,T]
 %V -- matrix that's M-by-N representing packet counts over time
@@ -18,15 +19,12 @@ N = size(rho,1);
 delays = reshape(u,1,N*N); % matrix to row vector. Reads across the rows
 % first, then columns.
 delays = [delays, 2*delays]; % now 2*N*N row vector
-tspan = [0 T];
 y0 = [V0;zeros(N,1)];
 
 % History
 SendHist = zeros(N,N,0);
 t_domain = zeros(0);
 memoize_hist_lookup = containers.Map(-1,zeros(N,N));
-
-options = odeset();
 
     % TODO: make this log n instead of linear
     function Sent=getBestSend(t) % gets the best estimate of the 
@@ -43,7 +41,8 @@ options = odeset();
 
         bestI = -1;
         bestError = realmax;
-        for i=size(t_domain,2):-1:1
+        %for i=size(t_domain,2):-1:1
+        for i=1:size(t_domain,2)
             if abs(t_domain(i)-t) < bestError
                 bestError = abs(t_domain(i)-t);
                 bestI = i;
@@ -107,13 +106,17 @@ options = odeset();
                 received = received + Sent(j,i);
             end
             ygrad(i) = received;
+            if y(i) > 0
+                ygrad(i) = ygrad(i) - min(rho(i),S(i)); % send packets
+                packets_processed = (rho(i) - min(rho(i),S(i)))/kappa;
+                ygrad(i) = ygrad(i) - packets_processed; % use 
+                % remaining resources to process
+                ygrad(N+i) = packets_processed; % record that
+            end
         end
-        ygrad(1:N) = ygrad(1:N) - min(rho,S); % send packets
     end
 
-sol = ddesd(@(t,y,Z) ddefun(t,y,Z),delays,y0,tspan,options);
-time_domain = sol.x;
-V = sol.y;
+[time_domain, V] = mydde(@(t,y,Z) ddefun(t,y,Z),delays,y0,T,tstep);
 
 
 end
