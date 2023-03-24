@@ -1,35 +1,33 @@
 % Solves the El Niño/La Niña problem in Example 4
-close;
-clear;
-clc;
+function [] = Exercise_2_Solver(alpha, beta, gamma, kappa, tau1, tau2, h_val)
 
-% Find delays, which are linearly spaced constants. 
-delay   = 0.5;
-Ny      = 1;
-delyf   = delay;
-Nyp     = 1;
-delypf  = delay;
-dely    = linspace(0, delyf, Ny+1);
-delyp   = linspace(0, delypf, Nyp+1);
+    % Find delays, which are linearly spaced constants. 
+    delyf   = max([tau1, tau2]);
+    
+    dely    = [tau1, tau2];
+    tau2_0  = 0;
+    
+    y_hist_need = linspace(-delyf, 0, 100);
+    
+    hist    = history_SST(y_hist_need, h_val);
 
-dely    = dely(2:end);
-delyp   = delyp(2:end);
+    % Covering case where no delay for tau2
+    if (tau2 == 0) 
+        dely    = tau1;
+        tau2_0  = 1;
+    end
+    
+    % Start and End Points
+    t0  = 0;
+    tf  = 10;
+    
+    % Solve DDE using ddensd
+    sol = dde23(@(t, y, ydel)ddefun_SST1(t, y, ydel, alpha, beta, gamma, kappa, tau2_0), dely, @(t)history_SST(t, h_val), [t0  tf]);
+    
+    plotX   = [y_hist_need, sol.x];
+    plotY   = [hist, sol.y];
+    
+    % Plotting
+    plot(plotX, plotY);
 
-y_hist_need = linspace(-delyf, 0, 100);
-
-hist    = history_circ(y_hist_need);
-
-% Start and End Points
-t0  = 0;
-tf  = 10;
-
-% Solve DDE using ddensd
-sol = ddensd(@ddefun_circ, dely, delyp, @history_circ, [t0  tf]);
-
-plotX   = [y_hist_need, sol.x];
-plotY   = [hist, sol.y];
-
-% Plotting
-figure(1);
-clf;
-plot(plotX, plotY);
+end
