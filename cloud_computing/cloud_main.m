@@ -7,7 +7,7 @@ function [time_domain,V] = cloud_main(g,rho,u,connected,kappa,V0,T,tstep)
 %probably 0 as it's the most efficient. Symmetric.
 %connected -- matrix of connections, N-by-N. 1 if two vertices are
 %connected, 0 if not. Symmetric.
-%kappa -- scalar cost of processing packets
+%kappa -- vector cost of processing packets
 %V0 -- column vector of initial packet counts, N-by-1
 %T -- how far to simulate in the future
 %tstep -- Forward Euler step size
@@ -90,7 +90,7 @@ SendHist = zeros(N,N,T*tper);
             ygrad(i) = received;
             if y(i) > 0
                 ygrad(i) = ygrad(i) - min(rho(i),S(i)); % send packets
-                packets_processed = (rho(i) - min(rho(i),S(i)))/kappa;
+                packets_processed = (rho(i) - min(rho(i),S(i)))/kappa(i);
                 ygrad(i) = ygrad(i) - packets_processed; % use 
                 % remaining resources to process
                 ygrad(N+i) = packets_processed; % record that
