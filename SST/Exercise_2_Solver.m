@@ -1,5 +1,5 @@
 % Solves the El Niño/La Niña problem in Example 4
-function [] = Exercise_2_Solver(alpha, beta, gamma, kappa, tau1, tau2, h_val)
+function [] = Exercise_2_Solver(alpha, beta, gamma, kappa, tau1, tau2, h_val, hist_mode)
 
     % Find delays, which are linearly spaced constants. 
     delyf   = max([tau1, tau2]);
@@ -9,7 +9,15 @@ function [] = Exercise_2_Solver(alpha, beta, gamma, kappa, tau1, tau2, h_val)
     
     y_hist_need = linspace(-delyf, 0, 100);
     
-    hist    = history_SST(y_hist_need, h_val);
+    if (hist_mode == 1)
+        hist_func   = @(t)history_SST(t, h_val);
+    elseif (hist_mode == 2)
+        hist_func   = @history_SST_play;
+    elseif (hist_mode == 3)
+
+    end
+
+    hist    = hist_func(y_hist_need);
 
     % Covering case where no delay for tau2
     if (tau2 == 0) 
@@ -22,7 +30,7 @@ function [] = Exercise_2_Solver(alpha, beta, gamma, kappa, tau1, tau2, h_val)
     tf  = 10;
     
     % Solve DDE using ddensd
-    sol = dde23(@(t, y, ydel)ddefun_SST1(t, y, ydel, alpha, beta, gamma, kappa, tau2_0), dely, @(t)history_SST(t, h_val), [t0  tf]);
+    sol = dde23(@(t, y, ydel)ddefun_SST1(t, y, ydel, alpha, beta, gamma, kappa, tau2_0), dely, hist_func, [t0  tf]);
     
     plotX   = [y_hist_need, sol.x];
     plotY   = [hist, sol.y];
