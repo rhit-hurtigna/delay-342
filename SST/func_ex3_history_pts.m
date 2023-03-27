@@ -1,10 +1,15 @@
-function [t_vec_plot, temp_vec_plot] = func_ex3_history_pts()
+function [t_vec_plot, temp_vec_plot] = func_ex3_history_pts(min_yr, max_yr)
 % Read data
 SST_data    = readmatrix("SST_data.csv");
 
 % Constants
+if (~exist('min_yr','var'))
+    min_yr  = 1948;
+end
+if (~exist('max_yr', 'var')) 
+    max_yr  = 2013;
+end
 curr_yr     = 2013;
-min_yr      = 1948;
 
 % Organize Data
 t           = SST_data(:,1) - curr_yr;
@@ -37,8 +42,8 @@ temp_vec    = [ SST_data(:,2);      % Jan
 % Editing Range
 temp_vec_plot   = temp_vec(t_vec > min_yr - curr_yr);
 t_vec_plot      = t_vec(t_vec > min_yr - curr_yr);
-temp_vec_plot   = temp_vec_plot(t_vec_plot < 0);
-t_vec_plot      = t_vec_plot(t_vec_plot < 0);
+temp_vec_plot   = temp_vec_plot(t_vec_plot < max_yr - curr_yr);
+t_vec_plot      = t_vec_plot(t_vec_plot < max_yr - curr_yr);
 
 % Plotting
 % figure(1);

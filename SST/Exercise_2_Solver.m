@@ -14,10 +14,14 @@ function [] = Exercise_2_Solver(alpha, beta, gamma, kappa, tau1, tau2, h_val, hi
     elseif (hist_mode == 2)
         hist_func   = @history_SST_play;
     elseif (hist_mode == 3)
-
+        [t_hist, T_hist]    = func_ex3_history_pts();
+        hist_func   = @(v)CubicSpline(t_hist, T_hist, v);
     end
 
     hist    = hist_func(y_hist_need);
+    if (hist_mode == 3)
+        hist    = hist';
+    end
 
     % Covering case where no delay for tau2
     if (tau2 == 0) 
