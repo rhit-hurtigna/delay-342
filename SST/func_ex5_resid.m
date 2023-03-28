@@ -1,5 +1,21 @@
-function R = func_ex5_resid(x, t_min, t_curr)
+function R = func_ex5_resid(x, hist_range)
+    % Function that computes the difference between the projected
+    % historical values and the measured historical values. 
+    % INPUTS
+    % x -- x = [alpha; tau] values for our model DDE function
+    % hist_range -- 2x1 vector representing the time range that you wish to
+    %               use as the history. The first value must be greater
+    %               than or equal to 1870, and it must be strictly less
+    %               than the second value. The second value must be less
+    %               than or equal to 2012.
+    % OUTPUT
+    % R -- The sum of squared error between measured historical values and
+    %      projected values from the DDE.
     
+    % Taking out t_min and t_curr
+    t_min   = hist_range(1);
+    t_curr  = hist_range(2);
+
     % Making sure t_min and t_curr are in range
     if (t_min < 1870)
         t_min   = 1870;
@@ -15,13 +31,27 @@ function R = func_ex5_resid(x, t_min, t_curr)
     end
 
     % Finding histories
-    [t_fut, T_fut]      = func_ex3_history_pts(1948, 2003);
-    [t_hist, T_hist]    = func_ex3_history_pts(2003, 2013);
-    alpha_7     = 1.2;
-    tau_7       = 10;
+    [t_hist, T_hist]    = func_ex3_history_pts(t_min, t_curr, t_curr);
+    [t_fut, T_fut]      = func_ex3_history_pts(t_curr, t_curr+10, t_curr);
+
+    % Variables
+    alpha   = x(1);
+    tau     = x(2);
+
+    % Solving 
     hist_func   = @(v)CubicSpline(t_hist, T_hist, v);
     t0      = 0;
-    tf      = 30;
-    sol = dde23(@(t, y, ydel)ddefun_SST3(t, y, ydel, alpha_7), tau_7, hist_func, [t0  tf]);
+    tf      = 10;
+
+    options = ddeset('RelTol', 1e-6, 'AbsTol', 1e-6);
+    sol     = dde23(@(t, y, ydel)ddefun_SST3(t, y, ydel, alpha), tau, hist_func, [t0  tf], options);
+    t_proj  = (sol.x)';
+    T_proj  = (sol.y)';
+
+    % Comparing history and projection
+    T_fut_new   = CubicSpline(t_fut, T_fut, t_proj);
+
+    % Residual is squared differences
+    R   = sum((T_fut_new-T_proj).^2);
 
 end

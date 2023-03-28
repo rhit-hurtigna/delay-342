@@ -31,7 +31,7 @@ for j = 1:4
     legend("Instance 1", "Instance 2", "Instance 3", "Instance 4", "Instance 5", 'location', 'southwest');
 end
 
-% Recreating fig 10.7
+%% Recreating fig 10.7
 [t_black, T_black]  = func_ex3_history_pts(1948, 2003);
 [t_red, T_red]      = func_ex3_history_pts(2003, 2013);
 alpha_7     = 1.2;
@@ -49,3 +49,9 @@ plot(t_red, T_red, "r+");
 plot(t_black, T_black, "k+");
 xlabel("Time (t) - Yearly Index");
 ylabel("Temperature");
+
+%% Testing func_ex5_resid function
+alpha0  = 1.2;
+tau0    = 10;
+hist_range  = [1900, 1950];
+resid   = func_ex5_resid([alpha0; tau0], hist_range);

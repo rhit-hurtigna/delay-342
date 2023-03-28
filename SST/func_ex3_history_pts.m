@@ -1,4 +1,4 @@
-function [t_vec_plot, temp_vec_plot] = func_ex3_history_pts(min_yr, max_yr)
+function [t_vec_plot, temp_vec_plot] = func_ex3_history_pts(min_yr, max_yr, curr_yr)
 % Read data
 SST_data    = readmatrix("SST_data.csv");
 
@@ -9,7 +9,9 @@ end
 if (~exist('max_yr', 'var')) 
     max_yr  = 2013;
 end
-curr_yr     = 2013;
+if (~exist('curr_yr', 'var'))
+    curr_yr = 2013;
+end
 
 % Organize Data
 t           = SST_data(:,1) - curr_yr;
