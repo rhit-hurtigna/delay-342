@@ -53,5 +53,11 @@ ylabel("Temperature");
 %% Testing func_ex5_resid function
 alpha0  = 1.2;
 tau0    = 10;
-hist_range  = [1900, 1950];
+x0      = [alpha0; tau0];
+hist_range  = [1940, 1950];
 resid   = func_ex5_resid([alpha0; tau0], hist_range);
+A       = -eye(length(x0));
+b       = x0*0;
+[t_optim, T_optim]  = fmincon(@(x)func_ex5_resid(x, hist_range), x0, A, b);
+
+
