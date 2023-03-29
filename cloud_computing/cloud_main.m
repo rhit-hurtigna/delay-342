@@ -22,6 +22,7 @@ T = ceil(T);
 
 N = size(rho,1);
 delays = reshape(u,1,N*N); % matrix to row vector. Reads across the rows
+origu = u;
 u = u * tper;
 % first, then columns.
 delays = [delays, 2*delays]; % now 2*N*N row vector
@@ -61,7 +62,8 @@ SendHist = zeros(N,N,T*tper);
                 % newZ(j,i,j,1).
                 % third, fourth params: rho(i), rho(j).
                 % fifth param: u(i)(j) = u(j)(i).
-                Sending(i,j) = g(y(i),newZ(j,i,j,1),rho(i),rho(j));
+                Sending(i,j) = g(y(i),newZ(j,i,j,1),...
+                    rho(i),rho(j),kappa(i),kappa(j),origu(i,j));
             end
         end
         S = sum(Sending,2); % S(i) is how many the processor is sending out
