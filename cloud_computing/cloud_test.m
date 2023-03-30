@@ -1,40 +1,42 @@
 function cloud_test()
 %CLOUD_TEST Tests cloud_main
 
-gbasic = @(x1,x2,~,~,~,~,~) max(0,x1-x2);
+makeg = @(bal) @(x1,x2,rho1,rho2,kappa1,kappa2,u) max(0,rho1*x1/kappa1 - rho2*(x2+bal*rho1*u)/kappa2);
 
-gsafe = @(x1,x2,rho1,~,~,~,u) max(0,x1 - (x2 + rho1*u));
+gbasic = makeg(0);
+
+gsafe = makeg(1);
 
 % Two processors, connected 1 - 2. Basic problem, this is the first example
 % in the paper.
-rho = [5;5];
+rho = [4;4];
 u = [0 1 ; 1 0];
 connected = [0 1 ; 1 0];
-kappa = [3;3];
+kappa = [4;4];
 V0 = [40;0];
-T = 20;
+T = 30;
 tstep = 5e-3;
 
 cloud_pretty(gbasic,rho,u,connected,kappa,V0,T,tstep);
 
 % Two processors, connected 1 - 2. Delay makes the problem really apparent.
-rho = [5;5];
+rho = [4;4];
 u = [0 8 ; 8 0];
 connected = [0 1 ; 1 0];
-kappa = [3;3];
+kappa = [4;4];
 V0 = [40;0];
-T = 70;
+T = 105;
 tstep = 5e-3;
 
 cloud_pretty(gbasic,rho,u,connected,kappa,V0,T,tstep);
 
 % Two processors, connected 1 - 2. No delay.
-rho = [5;5];
+rho = [4;4];
 u = [0 0 ; 0 0];
 connected = [0 1 ; 1 0];
-kappa = [3;3];
+kappa = [4;4];
 V0 = [40;0];
-T = 16;
+T = 30;
 tstep = 5e-3;
 
 cloud_pretty(gbasic,rho,u,connected,kappa,V0,T,tstep);
@@ -43,26 +45,77 @@ cloud_pretty(gbasic,rho,u,connected,kappa,V0,T,tstep);
 
 % Two processors, connected 1 - 2. Basic problem, this is the first example
 % in the paper.
-rho = [5;5];
+rho = [4;4];
 u = [0 1 ; 1 0];
 connected = [0 1 ; 1 0];
-kappa = [3;3];
+kappa = [4;4];
 V0 = [40;0];
-T = 20;
+T = 30;
 tstep = 5e-3;
 
 cloud_pretty(gsafe,rho,u,connected,kappa,V0,T,tstep);
 
 % Two processors, connected 1 - 2. Delay makes the problem really apparent.
-rho = [5;5];
+rho = [4;4];
 u = [0 8 ; 8 0];
 connected = [0 1 ; 1 0];
-kappa = [3;3];
+kappa = [4;4];
 V0 = [40;0];
-T = 70;
+T = 105;
 tstep = 5e-3;
 
 cloud_pretty(gsafe,rho,u,connected,kappa,V0,T,tstep);
+
+%% BEGIN BALANCE EXPERIMENTS
+
+% Two processors, connected 1 - 2. Basic problem, this is the first example
+% in the paper.
+rho = [4;4];
+u = [0 1 ; 1 0];
+connected = [0 1 ; 1 0];
+kappa = [4;4];
+V0 = [40;0];
+T = 30;
+tstep = 5e-3;
+balmin=0;
+balmax=4;
+balstep=0.03;
+
+[B,P] = balance_optimizer(rho,u,connected,kappa, ...
+    V0,T,tstep,balmin,balmax,balstep);
+
+figure();
+plot(B,P);
+xlabel("Safety parameter");
+ylabel("Makespan (time)");
+
+[~,i] = min(P);
+
+cloud_pretty(makeg(B(i)),rho,u,connected,kappa,V0,T,tstep);
+
+% Two processors, connected 1 - 2. Delay makes the problem really apparent.
+rho = [4;4];
+u = [0 8 ; 8 0];
+connected = [0 1 ; 1 0];
+kappa = [4;4];
+V0 = [40;0];
+T = 105;
+tstep = 5e-3;
+balmin=0;
+balmax=1.5;
+balstep=0.02;
+
+[B,P] = balance_optimizer(rho,u,connected,kappa, ...
+    V0,T,tstep,balmin,balmax,balstep);
+
+figure();
+plot(B,P);
+xlabel("Safety parameter");
+ylabel("Makespan (time)");
+
+[~,i] = min(P);
+
+cloud_pretty(makeg(B(i)),rho,u,connected,kappa,V0,T,tstep);
 
 return;
 
@@ -82,7 +135,7 @@ cloud_pretty(gbasic,rho,u,connected,kappa,V0,T,tstep);
 rho = [1;1];
 u = [0 12 ; 12 0];
 connected = [0 1 ; 1 0];
-kappa = [3;3];
+kappa = [4;4];
 V0 = [20;0];
 T = 180;
 tstep = 5e-3;
@@ -93,7 +146,7 @@ cloud_pretty(gbasic,rho,u,connected,kappa,V0,T,tstep);
 rho = [1;1];
 u = [0 0 ; 0 0];
 connected = [0 1 ; 1 0];
-kappa = [3;3];
+kappa = [4;4];
 V0 = [20;0];
 T = 180;
 tstep = 5e-3;

@@ -27,6 +27,7 @@ plot(time_domain, sum(V0)-sumV,'LineStyle',':','Color','Black', ...
 plot(time_domain, sum(V(N+1:2*N,:)),'LineStyle',':','Color','Magenta', ...
     'LineWidth',1.5);
 legend(legend_names,'Location','north');
+xlim([0 T]);
 hold off;
 
 end
