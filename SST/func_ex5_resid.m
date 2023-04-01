@@ -52,6 +52,9 @@ function R = func_ex5_resid(x, hist_range)
     T_fut_new   = CubicSpline(t_fut, T_fut, t_proj);
 
     % Residual is squared differences
-    R   = sum((T_fut_new-T_proj).^2);
+    R       = zeros(3,1);
+    R(1)    = sum(abs(T_fut_new - T_proj));    
+    R(2)    = sum((T_fut_new-T_proj).^2);
+    R(3)    = max(abs(T_fut_new - T_proj));
 
 end
