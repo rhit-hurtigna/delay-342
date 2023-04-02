@@ -91,6 +91,8 @@ ylabel("Makespan (time)");
 
 [~,i] = min(P);
 
+%fprintf("is %f\n", B(i));
+
 cloud_pretty(makeg(B(i)),rho,u,connected,kappa,V0,T,tstep);
 
 % Two processors, connected 1 - 2. Delay makes the problem really apparent.
@@ -114,6 +116,8 @@ xlabel("Safety parameter");
 ylabel("Makespan (time)");
 
 [~,i] = min(P);
+
+fprintf("is %f\n", B(i));
 
 cloud_pretty(makeg(B(i)),rho,u,connected,kappa,V0,T,tstep);
 

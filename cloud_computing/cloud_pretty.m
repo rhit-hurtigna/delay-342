@@ -30,5 +30,7 @@ legend(legend_names,'Location','north');
 xlim([0 T]);
 hold off;
 
+%fprintf("is %f\n", time_domain(find(sum(V0) - sum(V(N+1:2*N,:)) <= 0,1)));
+
 end
 
