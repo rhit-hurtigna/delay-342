@@ -24,6 +24,7 @@ N = size(rho,1);
 delays = reshape(u,1,N*N); % matrix to row vector. Reads across the rows
 origu = u;
 u = u * tper;
+u = round(u);
 % first, then columns.
 delays = [delays, 2*delays]; % now 2*N*N row vector
 y0 = [V0;zeros(N,1)];
@@ -33,6 +34,10 @@ SendHist = zeros(N,N,T*tper);
 
     function ygrad = ddefun(t,y,Z)
         t = round(t*tper) + 1;
+        if sum(y(N+1:2*N)) >= sum(V0)
+            ygrad = zeros(2*N,1);
+            return;
+        end
         % ignore the processings
         y = y(1:N);
         Z = Z(1:N,:);

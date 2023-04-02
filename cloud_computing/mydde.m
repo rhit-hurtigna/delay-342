@@ -4,6 +4,7 @@ function [time, Vals] = mydde(ddefun, delays, y0, tmax, tstep)
 tper = ceil(tstep^(-1));
 tstep = tper^(-1);
 delays = delays * tper;
+delays = round(delays);
 tmax = ceil(tmax);
 
 N = size(y0,1);
