@@ -15,7 +15,7 @@ fut_end     = curr_yr + 10;
 % Optimizing
 optim   = 1;
 if (optim)
-    alpha_rng   = [1; 6];
+    alpha_rng   = [1; 4];
     tau_rng     = [5; 10];
     [alpha_opt, tau_opt]    = func_grid_ex5(alpha_rng, tau_rng, curr_yr);
 else

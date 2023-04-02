@@ -57,7 +57,7 @@ function R = func_ex5_resid(x, hist_range)
     R(2)    = sum((T_fut_new-T_proj).^2);
     R(3)    = max(abs(T_fut_new - T_proj));
     t4      = linspace(0, 1, length(T_fut_new))';
-    y4      = 0.5-5*atan(10*(t4-0.5))/16;
+    y4      = 0.5-atan(15*(t4-0.5))/3;
     R(4)    = sum(abs(T_fut_new-T_proj).*y4);
 
 end
