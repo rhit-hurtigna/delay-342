@@ -23,16 +23,16 @@ function [alpha_optim, tau_optim] = func_grid_ex5(alpha_rng, tau_rng, curr_yr)
 
     % Optimize
     while (num_optim > 0)
-        R_min   = 10000000000*ones(3,1);
-        alpha_optim = zeros(3,1);
-        tau_optim = zeros(3,1);
+        R_min   = 10000000000*ones(4,1);
+        alpha_optim = zeros(4,1);
+        tau_optim = zeros(4,1);
         for alph = linspace(alpha_min, alpha_max, alpha_pts)
             for tau = linspace(tau_min, tau_max, tau_pts)
                 x_curr      = [alph; tau];
                 hist_rng    = [curr_yr-tau; curr_yr];       
                 R_curr  = func_ex5_resid(x_curr, hist_rng);
-                alph_curr   = alph*ones(3,1);
-                tau_curr    = tau*ones(3,1);
+                alph_curr   = alph*ones(4,1);
+                tau_curr    = tau*ones(4,1);
                 alpha_optim(R_curr < R_min)     = alph_curr(R_curr < R_min);
                 tau_optim(R_curr < R_min)       = tau_curr(R_curr < R_min);
                 R_min(R_curr < R_min)           = R_curr(R_curr < R_min);
