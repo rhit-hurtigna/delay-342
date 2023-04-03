@@ -8,15 +8,16 @@ clc;
 alpha0  = 1;
 tau0    = 8;
 
-% Finding history                                                                   
-curr_yr    = 1936;
-fut_end     = curr_yr + 10;
+% Finding history    
+tf          = 5;
+curr_yr    = 1942;
+fut_end     = curr_yr + tf;
 
 % Optimizing
 optim   = 1;
 if (optim)
-    alpha_rng   = [1; 4];
-    tau_rng     = [5; 10];
+    alpha_rng   = [0.8; 20];
+    tau_rng     = [2; 20];
     [alpha_opt, tau_opt]    = func_grid_ex5(alpha_rng, tau_rng, curr_yr);
 else
     alpha_opt   = alpha0;
@@ -28,10 +29,10 @@ hist_start = curr_yr - max(tau_opt);
 [t_hist, T_hist]    = func_ex3_history_pts(hist_start, curr_yr, curr_yr);
 hist_func   = @(v)CubicSpline(t_hist, T_hist, v);
 options = ddeset('RelTol', 1e-6, 'AbsTol', 1e-6);
-sol1     = dde23(@(t, y, ydel)ddefun_SST3(t, y, ydel, alpha_opt(1)), tau_opt(1), hist_func, [0, 10], options);
-sol2     = dde23(@(t, y, ydel)ddefun_SST3(t, y, ydel, alpha_opt(2)), tau_opt(2), hist_func, [0, 10], options);
-sol3     = dde23(@(t, y, ydel)ddefun_SST3(t, y, ydel, alpha_opt(3)), tau_opt(3), hist_func, [0, 10], options);
-sol4     = dde23(@(t, y, ydel)ddefun_SST3(t, y, ydel, alpha_opt(4)), tau_opt(4), hist_func, [0, 10], options);
+sol1     = dde23(@(t, y, ydel)ddefun_SST3(t, y, ydel, alpha_opt(1)), tau_opt(1), hist_func, [0, tf], options);
+sol2     = dde23(@(t, y, ydel)ddefun_SST3(t, y, ydel, alpha_opt(2)), tau_opt(2), hist_func, [0, tf], options);
+sol3     = dde23(@(t, y, ydel)ddefun_SST3(t, y, ydel, alpha_opt(3)), tau_opt(3), hist_func, [0, tf], options);
+sol4     = dde23(@(t, y, ydel)ddefun_SST3(t, y, ydel, alpha_opt(4)), tau_opt(4), hist_func, [0, tf], options);
 % sol5     = dde23(@(t, y, ydel)ddefun_SST3(t, y, ydel, alpha_opt(5)), tau_opt(5), hist_func, [0, 10], options);
 t_optim1  = (sol1.x)';
 T_optim1  = (sol1.y)';
